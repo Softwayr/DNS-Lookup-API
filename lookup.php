@@ -164,6 +164,9 @@ $ip = isset( $_GET['ip'] ) ? $_GET['ip'] : "";
 
 // Live and uncached lookups of individual records (TTL still applies)
 $a = isset( $_GET['a'] ) ? $_GET['a'] : "";
+$aaaa = isset( $_GET['aaaa'] ) ? $_GET['aaaa'] : "";
+$mx = isset( $_GET['mx'] ) ? $_GET['mx'] : "";
+$txt = isset( $_GET['txt'] ) ? $_GET['txt'] : "";
 
 // Retrieve whether to update the cache from the GET request.
 $update = isset( $_GET['update'] ) ? $_GET['update'] : "";
@@ -203,6 +206,39 @@ if( $domain ) {
 		echo json_encode(['a' => $a, 'result' => $a_records]);
 	} else {
 		echo json_encode(['type' => 'error', 'code' => 'NoARecords', 'message' => 'No A records were found for hostname "' . $a . '"']);
+	}
+// Individual and Uncached AAAA Record Lookup
+} else if( $aaaa ) {
+	// Fetch all AAAA records for given hostname $aaaa.
+	$aaaa_records = dns_get_record( $aaaa, DNS_AAAA );
+	
+	// Check for any records returned and output, otherwise output error.
+	if( $aaaa_records && is_array( $aaaa_records ) ) {
+		echo json_encode(['aaaa' => $aaaa, 'result' => $aaaa_records]);
+	} else {
+		echo json_encode(['type' => 'error', 'code' => 'NoAAAARecords', 'message' => 'No AAAA records were found for hostname "' . $aaaa . '"']);
+	}
+// Individual and Uncached MX Record Lookup
+} else if( $mx ) {
+	// Fetch all MX records for given hostname $mx.
+	$mx_records = dns_get_record( $mx, DNS_MX );
+	
+	// Check for any records returned and output, otherwise output error.
+	if( $mx_records && is_array( $mx_records ) ) {
+		echo json_encode(['mx' => $mx, 'result' => $mx_records]);
+	} else {
+		echo json_encode(['type' => 'error', 'code' => 'NoMXRecords', 'message' => 'No MX records were found for hostname "' . $mx . '"']);
+	}
+// Individual and Uncached TXT Record Lookup
+} else if( $txt ) {
+	// Fetch all TXT records for given hostname $txt.
+	$txt_records = dns_get_record( $txt, DNS_TXT );
+	
+	// Check for any records returned and output, otherwise output error.
+	if( $txt_records && is_array( $txt_records ) ) {
+		echo json_encode(['txt' => $txt, 'result' => $txt_records]);
+	} else {
+		echo json_encode(['type' => 'error', 'code' => 'NoTXTRecords', 'message' => 'No TXT records were found for hostname "' . $txt . '"']);
 	}
 // No domain or IP address specified.
 } else {

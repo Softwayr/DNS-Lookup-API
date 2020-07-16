@@ -26,6 +26,24 @@
 	# Match for A record lookup without hostname
 	RewriteRule ^lookup/a/?$ lookup.php [QSA,L]
 	
+	# Match for AAAA record lookup with hostname
+	RewriteRule ^lookup/aaaa/(.*)$ lookup.php?aaaa=$1 [QSA,L]
+	
+	# Match for AAAA record lookup without hostname
+	RewriteRule ^lookup/aaaa/?$ lookup.php [QSA,L]
+	
+	# Match for MX record lookup with hostname
+	RewriteRule ^lookup/mx/(.*)$ lookup.php?mx=$1 [QSA,L]
+	
+	# Match for MX record lookup without hostname
+	RewriteRule ^lookup/mx/?$ lookup.php [QSA,L]
+	
+	# Match for TXT record lookup with hostname
+	RewriteRule ^lookup/txt/(.*)$ lookup.php?txt=$1 [QSA,L]
+	
+	# Match for TXT record lookup without hostname
+	RewriteRule ^lookup/txt/?$ lookup.php [QSA,L]
+	
 	# Backwards Compatibility Match for Domain and Update Request
 	RewriteRule ^lookup/(.*)/update$ lookup.php?domain=$1&update=update [QSA,L]
 	
