@@ -20,6 +20,9 @@
 	# Match without IP
 	RewriteRule ^lookup/ip/?$ lookup.php [QSA,L]
 	
+	# Match for listing supported types
+	RewriteRule ^lookup/types/?$ lookup.php?type=list [QSA,L]
+	
 	# Match for individual record type lookup for hostname
 	RewriteRule ^lookup/(.*)/(.*)$ lookup.php?type=$1&hostname=$2 [QSA,L]
 	

@@ -159,19 +159,29 @@ function cache( String $domain, $update_cache = false ) {
 }
 
 /**
+ *		Get all supported DNS record types for lookup.
+ *		@return array $types The record types supported as an array.
+ */
+function get_supported_types() {
+	return ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'SOA', 'TXT'];
+}
+
+/**
  *		Performs an uncached lookup for a given hostname for the given record type.
  *		@param String $type The type of record to lookup.
  *		@param String $hostname The hostname to lookup.
  *		@return array|boolean The result as an array, or false on invalid type.
  */
 function get_records( String $type, String $hostname ) {
-	$acceptable_types = ['A' => DNS_A, 'AAAA' => DNS_AAAA, 'CNAME' => DNS_CNAME, 'MX' => DNS_MX, 'NS' => DNS_NS, 'SOA' => DNS_SOA, 'TXT' => DNS_TXT];
+	// All supported record types.
+	$supported_types = get_supported_types();
 	
-	if( !array_key_exists( strtoupper( $type ), $acceptable_types ) )
- 		return ['type' => 'error', 'code' => 'InvalidRecordType', 'message' => 'Requested record type "' . $type . '" is invalid.'];
- 	
+	// Validation check, output an error if requested type is not supported.
+	if( !in_array( strtoupper( $type ), $supported_types ) )
+		return ['type' => 'error', 'code' => 'InvalidRecordType', 'message' => 'Requested record type "' . $type . '" is invalid.'];
+	
 	// Fetch all A records for given hostname $a.
-	$records = dns_get_record( $hostname, $acceptable_types[ strtoupper( $type ) ] );
+	$records = dns_get_record( $hostname, constant( "DNS_" . strtoupper( $type ) ) );
 	
 	// Check for any records returned and output, otherwise output error.
 	if( $records && is_array( $records ) ) {
@@ -221,6 +231,12 @@ if( $domain ) {
 	} else {
 		echo json_encode(['type' => 'error', 'code' => 'NoHostname', 'message' => 'The hostname for "' . $ip . '" could not be found.']);
 	}
+
+// Request all accepted DNS record types to lookup.
+} else if( $type == "list" ) {
+	
+	echo json_encode( [ "supported_types" => get_supported_types() ] );
+	
 // Individual and Uncached Record Lookup
 } else if( $type && $hostname ) {
 	
