@@ -167,8 +167,9 @@ function cache( String $domain, $update_cache = false ) {
 function get_records( String $type, String $hostname ) {
 	$acceptable_types = ['A' => DNS_A, 'AAAA' => DNS_AAAA, 'MX' => DNS_MX, 'TXT' => DNS_TXT];
 	
-	if( !array_key_exists( strtoupper( $type ), $acceptable_types ) ) return false;
-	
+	if( !array_key_exists( strtoupper( $type ), $acceptable_types ) )
+ 		return ['type' => 'error', 'code' => 'InvalidRecordType', 'message' => 'Requested record type "' . $type . '" is invalid.'];
+ 		
 	// Fetch all A records for given hostname $a.
 	$records = dns_get_record( $hostname, $acceptable_types[ strtoupper( $type ) ] );
 	
