@@ -21,25 +21,25 @@
 	RewriteRule ^lookup/ip/?$ lookup.php [QSA,L]
 	
 	# Match for A record lookup with hostname
-	RewriteRule ^lookup/a/(.*)$ lookup.php?a=$1 [QSA,L]
+	RewriteRule ^lookup/a/(.*)$ lookup.php?type=a&hostname=$1 [QSA,L]
 	
 	# Match for A record lookup without hostname
 	RewriteRule ^lookup/a/?$ lookup.php [QSA,L]
 	
 	# Match for AAAA record lookup with hostname
-	RewriteRule ^lookup/aaaa/(.*)$ lookup.php?aaaa=$1 [QSA,L]
+	RewriteRule ^lookup/aaaa/(.*)$ lookup.php?type=aaaa&hostname=$1 [QSA,L]
 	
 	# Match for AAAA record lookup without hostname
 	RewriteRule ^lookup/aaaa/?$ lookup.php [QSA,L]
 	
 	# Match for MX record lookup with hostname
-	RewriteRule ^lookup/mx/(.*)$ lookup.php?mx=$1 [QSA,L]
+	RewriteRule ^lookup/mx/(.*)$ lookup.php?type=mx&hostname=$1 [QSA,L]
 	
 	# Match for MX record lookup without hostname
 	RewriteRule ^lookup/mx/?$ lookup.php [QSA,L]
 	
 	# Match for TXT record lookup with hostname
-	RewriteRule ^lookup/txt/(.*)$ lookup.php?txt=$1 [QSA,L]
+	RewriteRule ^lookup/txt/(.*)$ lookup.php?type=txt&hostname=$1 [QSA,L]
 	
 	# Match for TXT record lookup without hostname
 	RewriteRule ^lookup/txt/?$ lookup.php [QSA,L]

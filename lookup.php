@@ -158,15 +158,39 @@ function cache( String $domain, $update_cache = false ) {
 	return false;
 }
 
+/**
+ *		Performs an uncached lookup for a given hostname for the given record type.
+ *		@param String $type The type of record to lookup.
+ *		@param String $hostname The hostname to lookup.
+ *		@return array|boolean The result as an array, or false on invalid type.
+ */
+function get_records( String $type, String $hostname ) {
+	$acceptable_types = ['A' => DNS_A, 'AAAA' => DNS_AAAA, 'MX' => DNS_MX, 'TXT' => DNS_TXT];
+	
+	if( !array_key_exists( strtoupper( $type ), $acceptable_types ) ) return false;
+	
+	// Fetch all A records for given hostname $a.
+	$records = dns_get_record( $hostname, $acceptable_types[ strtoupper( $type ) ] );
+	
+	// Check for any records returned and output, otherwise output error.
+	if( $records && is_array( $records ) ) {
+		// Sort records alphabetically in ascending order.
+		sort( $records );
+		// Output the records.
+		return [$type => $hostname, 'result' => $records];
+	} else {
+		// Output error.
+		return ['type' => 'error', 'code' => 'No' . strtoupper( $type ) . 'Records', 'message' => 'No ' . strtoupper( $type ) . ' records were found for hostname "' . $hostname . '"'];
+	}
+}
+
 // Retrieve the domain for lookup from the GET request.
 $domain = isset( $_GET['domain'] ) ? $_GET['domain'] : "";
 $ip = isset( $_GET['ip'] ) ? $_GET['ip'] : "";
 
 // Live and uncached lookups of individual records (TTL still applies)
-$a = isset( $_GET['a'] ) ? $_GET['a'] : "";
-$aaaa = isset( $_GET['aaaa'] ) ? $_GET['aaaa'] : "";
-$mx = isset( $_GET['mx'] ) ? $_GET['mx'] : "";
-$txt = isset( $_GET['txt'] ) ? $_GET['txt'] : "";
+$type = isset( $_GET['type'] ) ? $_GET['type'] : "";
+$hostname = isset( $_GET['hostname'] ) ? $_GET['hostname'] : "";
 
 // Retrieve whether to update the cache from the GET request.
 $update = isset( $_GET['update'] ) ? $_GET['update'] : "";
@@ -196,50 +220,11 @@ if( $domain ) {
 	} else {
 		echo json_encode(['type' => 'error', 'code' => 'NoHostname', 'message' => 'The hostname for "' . $ip . '" could not be found.']);
 	}
-// Individual and Uncached A Record Lookup
-} else if( $a ) {
-	// Fetch all A records for given hostname $a.
-	$a_records = dns_get_record( $a, DNS_A );
+// Individual and Uncached Record Lookup
+} else if( $type && $hostname ) {
 	
-	// Check for any records returned and output, otherwise output error.
-	if( $a_records && is_array( $a_records ) ) {
-		echo json_encode(['a' => $a, 'result' => $a_records]);
-	} else {
-		echo json_encode(['type' => 'error', 'code' => 'NoARecords', 'message' => 'No A records were found for hostname "' . $a . '"']);
-	}
-// Individual and Uncached AAAA Record Lookup
-} else if( $aaaa ) {
-	// Fetch all AAAA records for given hostname $aaaa.
-	$aaaa_records = dns_get_record( $aaaa, DNS_AAAA );
-	
-	// Check for any records returned and output, otherwise output error.
-	if( $aaaa_records && is_array( $aaaa_records ) ) {
-		echo json_encode(['aaaa' => $aaaa, 'result' => $aaaa_records]);
-	} else {
-		echo json_encode(['type' => 'error', 'code' => 'NoAAAARecords', 'message' => 'No AAAA records were found for hostname "' . $aaaa . '"']);
-	}
-// Individual and Uncached MX Record Lookup
-} else if( $mx ) {
-	// Fetch all MX records for given hostname $mx.
-	$mx_records = dns_get_record( $mx, DNS_MX );
-	
-	// Check for any records returned and output, otherwise output error.
-	if( $mx_records && is_array( $mx_records ) ) {
-		echo json_encode(['mx' => $mx, 'result' => $mx_records]);
-	} else {
-		echo json_encode(['type' => 'error', 'code' => 'NoMXRecords', 'message' => 'No MX records were found for hostname "' . $mx . '"']);
-	}
-// Individual and Uncached TXT Record Lookup
-} else if( $txt ) {
-	// Fetch all TXT records for given hostname $txt.
-	$txt_records = dns_get_record( $txt, DNS_TXT );
-	
-	// Check for any records returned and output, otherwise output error.
-	if( $txt_records && is_array( $txt_records ) ) {
-		echo json_encode(['txt' => $txt, 'result' => $txt_records]);
-	} else {
-		echo json_encode(['type' => 'error', 'code' => 'NoTXTRecords', 'message' => 'No TXT records were found for hostname "' . $txt . '"']);
-	}
+	echo json_encode( get_records( $type, $hostname ) );
+
 // No domain or IP address specified.
 } else {
 	// Output a JSON encoded array with an error stating no domain provided
