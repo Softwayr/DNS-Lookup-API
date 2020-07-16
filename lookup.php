@@ -183,7 +183,8 @@ if( $domain ) {
 	$hostname = gethostbyaddr( $ip );
 	
 	// Output the hostname if provided, otherwise output an error message.
-	if( $hostname ) {
+	// Bug Fix: Ensure hostname is not same as IP
+ 	if( $hostname && $hostname != $ip ) { 
 		echo json_encode(['ip' => $ip, 'hostname' => $hostname]);
 	} else {
 		echo json_encode(['type' => 'error', 'code' => 'NoHostname', 'message' => 'The hostname for "' . $ip . '" could not be found.']);
