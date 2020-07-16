@@ -161,6 +161,10 @@ function cache( String $domain, $update_cache = false ) {
 // Retrieve the domain for lookup from the GET request.
 $domain = isset( $_GET['domain'] ) ? $_GET['domain'] : "";
 $ip = isset( $_GET['ip'] ) ? $_GET['ip'] : "";
+
+// Live and uncached lookups of individual records (TTL still applies)
+$a = isset( $_GET['a'] ) ? $_GET['a'] : "";
+
 // Retrieve whether to update the cache from the GET request.
 $update = isset( $_GET['update'] ) ? $_GET['update'] : "";
 
@@ -183,11 +187,22 @@ if( $domain ) {
 	$hostname = gethostbyaddr( $ip );
 	
 	// Output the hostname if provided, otherwise output an error message.
-	// Bug Fix: Ensure hostname is not same as IP
- 	if( $hostname && $hostname != $ip ) { 
+	// Bug Fix: Ensure hostname is not same as IP.
+	if( $hostname && $hostname != $ip ) {
 		echo json_encode(['ip' => $ip, 'hostname' => $hostname]);
 	} else {
 		echo json_encode(['type' => 'error', 'code' => 'NoHostname', 'message' => 'The hostname for "' . $ip . '" could not be found.']);
+	}
+// Individual and Uncached A Record Lookup
+} else if( $a ) {
+	// Fetch all A records for given hostname $a.
+	$a_records = dns_get_record( $a, DNS_A );
+	
+	// Check for any records returned and output, otherwise output error.
+	if( $a_records && is_array( $a_records ) ) {
+		echo json_encode(['a' => $a, 'result' => $a_records]);
+	} else {
+		echo json_encode(['type' => 'error', 'code' => 'NoARecords', 'message' => 'No A records were found for hostname "' . $a . '"']);
 	}
 // No domain or IP address specified.
 } else {
