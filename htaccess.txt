@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+
+	# Start Rewrite Engine
+	RewriteEngine on
+	
+	# DNS LOOKUP API RULES
+	
+	# Match for Domain and Update Request
+	RewriteRule ^lookup/(.*)/update$ lookup.php?domain=$1&update=update [QSA,L]
+	
+	# Match for Domain Only
+	RewriteRule ^lookup/(.*)$ lookup.php?domain=$1 [QSA,L]
+	
+	# Match without Domain
+	RewriteRule ^lookup/?$ lookup.php [QSA,L]
+	
+	# END DNS LOOKUP API RULES
+	
+</IfModule>
