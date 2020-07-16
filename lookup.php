@@ -226,10 +226,9 @@ if( $domain ) {
 	
 	echo json_encode( get_records( $type, $hostname ) );
 
-// No domain or IP address specified.
+// Nothing specified.
 } else {
-	// Output a JSON encoded array with an error stating no domain provided
-	// and a generated readable message.
-	$output = ['type' => 'error', 'code' => 'MissingDomainParameter', 'message' => 'Domain parameter must be provided.'];
+	// Output a JSON encoded array with a welcome message.
+	$output = ['type' => 'message', 'code' => 'DNS-Lookup-API', 'message' => 'This is the DNS Lookup API'];
 	echo json_encode( $output );
 }
