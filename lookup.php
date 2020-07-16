@@ -165,11 +165,11 @@ function cache( String $domain, $update_cache = false ) {
  *		@return array|boolean The result as an array, or false on invalid type.
  */
 function get_records( String $type, String $hostname ) {
-	$acceptable_types = ['A' => DNS_A, 'AAAA' => DNS_AAAA, 'MX' => DNS_MX, 'TXT' => DNS_TXT];
+	$acceptable_types = ['A' => DNS_A, 'AAAA' => DNS_AAAA, 'CNAME' => DNS_CNAME, 'MX' => DNS_MX, 'NS' => DNS_NS, 'SOA' => DNS_SOA, 'TXT' => DNS_TXT];
 	
 	if( !array_key_exists( strtoupper( $type ), $acceptable_types ) )
  		return ['type' => 'error', 'code' => 'InvalidRecordType', 'message' => 'Requested record type "' . $type . '" is invalid.'];
- 		
+ 	
 	// Fetch all A records for given hostname $a.
 	$records = dns_get_record( $hostname, $acceptable_types[ strtoupper( $type ) ] );
 	
