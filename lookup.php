@@ -72,6 +72,9 @@ function lookup( String $domain ) {
  *		@return array|boolean An array of results or false on failure.
  */
 function cache( String $domain, $update_cache = false ) {
+	// Remove "www." from beginning of specified domain.
+	$domain = substr( $domain, 0, 4 ) == "www." ? substr( $domain, 4 ) : $domain;
+	
 	// Ensure update cache is a boolean or change to false.
 	$update_cache = is_bool( $update_cache ) ? $update_cache : false;
 	
