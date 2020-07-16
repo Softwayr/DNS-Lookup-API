@@ -20,6 +20,12 @@
 	# Match without IP
 	RewriteRule ^lookup/ip/?$ lookup.php [QSA,L]
 	
+	# Backwards Compatibility Match for Domain and Update Request
+ 	RewriteRule ^lookup/(.*)/update$ lookup.php?domain=$1&update=update [QSA,L]
+
+ 	# Backwards Compatibility Match for Domain Only
+ 	RewriteRule ^lookup/(.*)$ lookup.php?domain=$1 [QSA,L]
+	
 	# Match without Domain or IP
 	RewriteRule ^lookup/?$ lookup.php [QSA,L]
 	
