@@ -53,8 +53,10 @@ function lookup( String $domain ) {
 	if( $result1 !== FALSE && is_array( $result1 ) && !empty( $result1 ) && count( $result1 ) > 0 ):
 		// Merge both lookups (domain and www subdomain) into one array.
     	$result = array_merge( $result1, $result2 );
-    	// Sort that array in ascending order.
+    	
+		// Sort that array in ascending order.
     	sort( $result );
+		
     	// Return the array.
     	return $result;
 	else:
@@ -158,6 +160,7 @@ function cache( String $domain, $update_cache = false ) {
 
 // Retrieve the domain for lookup from the GET request.
 $domain = isset( $_GET['domain'] ) ? $_GET['domain'] : "";
+$ip = isset( $_GET['ip'] ) ? $_GET['ip'] : "";
 // Retrieve whether to update the cache from the GET request.
 $update = isset( $_GET['update'] ) ? $_GET['update'] : "";
 
@@ -174,7 +177,18 @@ if( $domain ) {
 		// Retrieve the cache.
 		echo cache( $domain );
 	}
-// No domain specified.
+// No domain specified, what about an IP address?
+} else if( $ip ) {
+	// Lookup the hostname for the given IP address.
+	$hostname = gethostbyaddr( $ip );
+	
+	// Output the hostname if provided, otherwise output an error message.
+	if( $hostname ) {
+		echo json_encode(['ip' => $ip, 'hostname' => $hostname]);
+	} else {
+		echo json_encode(['type' => 'error', 'code' => 'NoHostname', 'message' => 'The hostname for "' . $ip . '" could not be found.']);
+	}
+// No domain or IP address specified.
 } else {
 	// Output a JSON encoded array with an error stating no domain provided
 	// and a generated readable message.
